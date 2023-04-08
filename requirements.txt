@@ -1,3 +1,2 @@
 requests
 azure-functions
-xml.etree.ElementTree
