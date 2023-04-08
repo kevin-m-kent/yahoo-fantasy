@@ -3,6 +3,7 @@ import datetime
 import azure.functions as func
 import requests
 import xml.etree.ElementTree as ET
+import os
 
 def main(mytimer: func.TimerRequest) -> None:
     logging.info('Starting Yahoo Fantasy Sports API update function.')
@@ -12,9 +13,17 @@ def main(mytimer: func.TimerRequest) -> None:
 
     # Define the required parameters
     GAME_KEY = "mlb" # The Yahoo Fantasy Sports game key
-    LEAGUE_ID = "123456" # The Yahoo Fantasy Sports league ID
-    TEAM_ID = "1" # The Yahoo Fantasy Sports team ID
-    ACCESS_TOKEN = "YOUR_ACCESS_TOKEN" # Your Yahoo Fantasy Sports API access token
+    LEAGUE_ID = "21429" # The Yahoo Fantasy Sports league ID
+    TEAM_ID = "7" # The Yahoo Fantasy Sports team ID
+
+    client_id = os.getenv('YAHOO_CLIENT_ID')
+    client_secret = os.getenv('YAHOO_CLIENT_SECRET')
+
+    response = requests.post('https://api.login.yahoo.com/oauth2/get_token',
+                             data={'grant_type': 'client_credentials',
+                                   'client_id': client_id,
+                                   'client_secret': client_secret})
+    ACCESS_TOKEN = response.raise_for_status()
 
     # Define the API endpoint URL
     url = f"{BASE_URL}/game/{GAME_KEY}/league/{LEAGUE_ID}/team/{TEAM_ID}/roster"
